@@ -6,7 +6,7 @@
 /*   By: hyap <hyap@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/05/17 10:37:51 by hyap              #+#    #+#             */
-/*   Updated: 2021/05/27 13:05:20 by hyap             ###   ########.fr       */
+/*   Updated: 2021/05/27 13:24:33 by hyap             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,6 +65,8 @@ char	**ft_split(const char *s, char c)
 	int		i;
 	int		index;
 
+	if (!s)
+		return (NULL);
 	i = 0;
 	index = 0;
 	str = (char **)malloc(sizeof(char *) * (string_count(s, c) + 1));
