@@ -23,6 +23,13 @@ typedef struct s_list
 	struct s_list	*next;
 }				t_list;
 
+typedef struct	s_bstnode
+{
+	int					content;
+	struct s_bstnode	*left;
+	struct s_bstnode	*right;
+}				t_bstnode;
+
 void	*ft_memset(void *s, int c, size_t n);
 void	ft_bzero(void *s, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
@@ -73,5 +80,9 @@ void	ft_lstdelone(t_list *lst, void (*del)(void *));
 void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
+
+t_bstnode	*ft_bstnew(int content);
+int			ft_bstsearch(t_bstnode *node, int content);
+void		ft_bstinsert(t_bstnode **node, int content);
 
 #endif
