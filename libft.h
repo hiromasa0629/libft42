@@ -25,10 +25,24 @@ typedef struct s_list
 
 typedef struct	s_bstnode
 {
-	int					content;
+	void				*content;
 	struct s_bstnode	*left;
 	struct s_bstnode	*right;
 }				t_bstnode;
+
+enum color {
+	RED,
+	BLACK
+};
+
+typedef struct	s_rbtnode
+{
+	void				*content;
+	struct s_rbtnode	*parent;
+	struct s_rbtnode	*left;
+	struct s_rbtnode	*right;
+	enum color			color;
+}				t_rbtnode;
 
 void	*ft_memset(void *s, int c, size_t n);
 void	ft_bzero(void *s, size_t n);
@@ -81,8 +95,24 @@ void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 
-t_bstnode	*ft_bstnew(int content);
-int			ft_bstsearch(t_bstnode *node, int content);
-void		ft_bstinsert(t_bstnode **node, int content);
+t_bstnode	*ft_bstnew(void *content);
+int			ft_bstsearch(t_bstnode *node, void *content);
+void		ft_bstinsert(t_bstnode **node, void *content);
+void		*ft_bst_findmax(t_bstnode *root);
+void		*ft_bst_findmin(t_bstnode *root);
+int			ft_bst_findheight(t_bstnode *root);
+void		ft_bst_preorder_iter(t_bstnode *root, void (*f)(void *));
+void		ft_bst_inorder_iter(t_bstnode *root, void (*f)(void *));
+void		ft_bst_postorder_iter(t_bstnode *root, void (*f)(void *));
+
+t_rbtnode	*ft_rbtnew(void *content);
+int			ft_rbtsearch(t_rbtnode *node, void *content);
+// void		ft_rbtinsert(t_rbtnode **node, void *content);
+void		*ft_rbt_findmax(t_rbtnode *root);
+void		*ft_rbt_findmin(t_rbtnode *root);
+int			ft_rbt_findheight(t_rbtnode *root);
+void		ft_rbt_preorder_iter(t_rbtnode *root, void (*f)(void *));
+void		ft_rbt_inorder_iter(t_rbtnode *root, void (*f)(void *));
+void		ft_rbt_postorder_iter(t_rbtnode *root, void (*f)(void *));
 
 #endif

@@ -6,20 +6,18 @@
 /*   By: hyap <hyap@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 14:48:20 by hyap              #+#    #+#             */
-/*   Updated: 2022/12/05 15:38:57 by hyap             ###   ########.fr       */
+/*   Updated: 2022/12/05 20:52:54 by hyap             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
+void	myprint(void *content)
+{
+	printf("%d\n", *(int *)content);
+}
+
 int	main(void)
 {
-	t_bstnode *bst;
-
-	bst = NULL;
-	ft_bstinsert(&bst, 10);
-	ft_bstinsert(&bst, 20);
-	ft_bstinsert(&bst, 5);
-
 	return (0);
 }
