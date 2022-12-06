@@ -44,6 +44,8 @@ typedef struct	s_rbtnode
 	enum color			color;
 }				t_rbtnode;
 
+t_rbtnode	*g_nil;
+
 void	*ft_memset(void *s, int c, size_t n);
 void	ft_bzero(void *s, size_t n);
 void	*ft_memcpy(void *dest, const void *src, size_t n);
@@ -105,14 +107,20 @@ void		ft_bst_preorder_iter(t_bstnode *root, void (*f)(void *));
 void		ft_bst_inorder_iter(t_bstnode *root, void (*f)(void *));
 void		ft_bst_postorder_iter(t_bstnode *root, void (*f)(void *));
 
-t_rbtnode	*ft_rbtnew(void *content);
+t_rbtnode	*ft_rbt_createnil(void);
+t_rbtnode	*ft_rbtnew(void *content, t_rbtnode *parent);
 int			ft_rbtsearch(t_rbtnode *node, void *content);
-// void		ft_rbtinsert(t_rbtnode **node, void *content);
+void		ft_rbtinsert(t_rbtnode **node, void *content, t_rbtnode *parent);
 void		*ft_rbt_findmax(t_rbtnode *root);
 void		*ft_rbt_findmin(t_rbtnode *root);
 int			ft_rbt_findheight(t_rbtnode *root);
 void		ft_rbt_preorder_iter(t_rbtnode *root, void (*f)(void *));
 void		ft_rbt_inorder_iter(t_rbtnode *root, void (*f)(void *));
 void		ft_rbt_postorder_iter(t_rbtnode *root, void (*f)(void *));
+
+void		ft_rbt_rotate_left(t_rbtnode **root, t_rbtnode *node);
+void		ft_rbt_rotate_right(t_rbtnode **root, t_rbtnode *node);
+
+
 
 #endif
