@@ -6,7 +6,7 @@
 /*   By: hyap <hyap@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 20:53:00 by hyap              #+#    #+#             */
-/*   Updated: 2022/12/06 16:55:32 by hyap             ###   ########.fr       */
+/*   Updated: 2022/12/06 20:56:22 by hyap             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,7 +163,8 @@ void	ft_rbt_inorder_iter(t_rbtnode *root, void (*f)(void *))
 	if (!ft_rbt_isnil(root->left))
 		ft_rbt_inorder_iter(root->left, f);
 	f(root->content);
-	if (root->parent)
+	printf("color: %s\n", (root->color == RED ? "RED" : "BLACK"));
+	if (!ft_rbt_isnil(root->parent))
 		printf(" parent: %d\n", *((int *)root->parent->content));
 	printf("\n");
 	if (!ft_rbt_isnil(root->right))
@@ -179,13 +180,77 @@ void	ft_rbt_postorder_iter(t_rbtnode *root, void (*f)(void *))
 	f(root->content);
 }
 
-void	ft_rbtinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
+t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
 {
 	if (ft_rbt_isnil(*node))
+	{
 		*node = ft_rbtnew(content, parent);
+		return (*node);
+	}
 	else if (ft_rbt_lessthan(content, (*node)->content))
-		ft_rbtinsert(&((*node)->left), content, *node);
+		return (ft_rbt_preinsert(&((*node)->left), content, *node));
 	else
-		ft_rbtinsert(&((*node)->right), content, *node);
+		return (ft_rbt_preinsert(&((*node)->right), content, *node));
 }
 
+void	ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node)
+{
+	t_rbtnode	*uncle;
+	
+	while (node->parent->color == RED)
+	{
+		if (node->parent == node->parent->parent->left) // node parent is a left child
+		{
+			uncle = node->parent->parent->right;
+			if (uncle->color == RED)
+			{
+				node->parent->color = BLACK;
+				node->parent->parent->color = RED;
+				uncle->color = BLACK;
+				node = node->parent->parent;
+			}
+			else if (uncle->color == BLACK)
+			{
+				if (node == node->parent->right) // node is a right child
+				{
+					node = node->parent;
+					ft_rbt_rotate_left(root, node);
+				}
+				node->parent->color = BLACK;
+				node->parent->parent->color = RED;
+				ft_rbt_rotate_right(root, node->parent->parent);
+			}
+		}
+		else if (node->parent == node->parent->parent->right) // node parent is a right child
+		{
+			uncle = node->parent->parent->left;
+			if (uncle->color == RED)
+			{
+				node->parent->color = BLACK;
+				node->parent->parent->color = RED;
+				uncle->color = BLACK;
+				node = node->parent->parent;
+			}
+			else if (uncle->color == BLACK)
+			{
+				if (node == node->parent->left) // node is a left child
+				{
+					node = node->parent;
+					ft_rbt_rotate_right(root, node);
+				}
+				node->parent->color = BLACK;
+				node->parent->parent->color = RED;
+				ft_rbt_rotate_left(root, node->parent->parent);
+			}
+		}
+	}
+	(*root)->color = BLACK;
+}
+
+void	ft_rbt_insert(t_rbtnode **node, void *content)
+{
+	t_rbtnode	*inserted;
+	
+	inserted = ft_rbt_preinsert(node, content, g_nil);
+	ft_rbt_fixup(node, inserted);
+}
