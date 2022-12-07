@@ -6,7 +6,7 @@
 /*   By: hyap <hyap@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 20:53:00 by hyap              #+#    #+#             */
-/*   Updated: 2022/12/07 17:03:42 by hyap             ###   ########.fr       */
+/*   Updated: 2022/12/07 20:36:33 by hyap             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,16 +105,16 @@ void	ft_rbt_rotate_right(t_rbtnode **root, t_rbtnode *node)
 	node->parent = tmp;
 }
 
-t_rbtnode	*ft_rbtsearch(t_rbtnode *node, void *content)
+t_rbtnode	*ft_rbt_search(t_rbtnode *node, void *content)
 {
 	if (node == g_nil)
 		return (NULL);
 	if (ft_rbt_issame(node->content, content))
 		return (node);
-	if (ft_rbt_lessthan(node->content, content))
-		return (ft_rbtsearch(node->left, content));
+	if (ft_rbt_lessthan(content, node->content))
+		return (ft_rbt_search(node->left, content));
 	else
-		return (ft_rbtsearch(node->right, content));
+		return (ft_rbt_search(node->right, content));
 }
 
 t_rbtnode	*ft_rbt_findmin(t_rbtnode *root)
@@ -180,7 +180,7 @@ void	ft_rbt_postorder_iter(t_rbtnode *root, void (*f)(void *))
 	f(root->content);
 }
 
-t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
+static t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
 {
 	if (ft_rbt_isnil(*node))
 	{
@@ -193,7 +193,7 @@ t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
 		return (ft_rbt_preinsert(&((*node)->right), content, *node));
 }
 
-void	ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node)
+static void	ft_rbt_insertfixup(t_rbtnode **root, t_rbtnode *node)
 {
 	t_rbtnode	*uncle;
 
@@ -252,7 +252,7 @@ void	ft_rbt_insert(t_rbtnode **node, void *content)
 	t_rbtnode	*inserted;
 
 	inserted = ft_rbt_preinsert(node, content, g_nil);
-	ft_rbt_fixup(node, inserted);
+	ft_rbt_insertfixup(node, inserted);
 }
 
 static void	ft_rbt_transplant(t_rbtnode **root, t_rbtnode *u, t_rbtnode *v)
@@ -267,7 +267,79 @@ static void	ft_rbt_transplant(t_rbtnode **root, t_rbtnode *u, t_rbtnode *v)
 		v->parent = u->parent;
 }
 
-// static void	ft_rbt_fixup(t_rbtnode *)
+static void	ft_rbt_delfixup(t_rbtnode **root, t_rbtnode *node)
+{
+	t_rbtnode	*w;
+	
+	while (node != *root && node->color == BLACK)
+	{
+		// if (node == g_nil)
+		// 	printf("is g_nil\n");
+		if (node == node->parent->left)
+		{
+			w = node->parent->right;
+			if (w->color == RED)
+			{
+				w->color = BLACK;
+				node->parent->color = RED;
+				ft_rbt_rotate_left(root, node->parent);
+				w = node->parent->right;
+			}
+			if (w->left->color == BLACK && w->right->color == BLACK)
+			{
+				w->color = RED;
+				node = node->parent;
+			}
+			else
+			{
+				if (w->right->color == BLACK)
+				{
+					w->left->color = BLACK;
+					w->color = RED;
+					ft_rbt_rotate_right(root, w);
+					w = node->parent->right;
+				}
+				w->color = node->parent->color;
+				node->parent->color = BLACK;
+				w->right->color = BLACK;
+				ft_rbt_rotate_left(root, node->parent);
+				node = *root;
+			}
+		}
+		else if (node == node->parent->right)
+		{
+			w = node->parent->left;
+			if (w->color == RED)
+			{
+				w->color = BLACK;
+				node->parent->color = RED;
+				ft_rbt_rotate_right(root, node->parent);
+				w = node->parent->left;
+			}
+			if (w->left->color == BLACK && w->right->color == BLACK)
+			{
+				w->color = RED;
+				node = node->parent;
+			}
+			else
+			{
+				if (w->left->color == BLACK)
+				{
+					w->right->color = BLACK;
+					w->color = RED;
+					ft_rbt_rotate_left(root, w);
+					w = node->parent->left;
+				}
+				w->color = node->parent->color;
+				node->parent->color = BLACK;
+				w->left->color = BLACK;
+				ft_rbt_rotate_right(root, node->parent);
+				node = *root;
+			}
+		}
+	}
+	node->color = BLACK;
+}
 
 void	ft_rbt_delone(t_rbtnode **root, t_rbtnode *tbd, void (*del)(void *))
 {
@@ -278,6 +350,7 @@ void	ft_rbt_delone(t_rbtnode **root, t_rbtnode *tbd, void (*del)(void *))
 	if (!tbd)
 		return ;
 	ori = tbd->color;
+	
 	if (tbd->left == g_nil)
 	{
 		x = tbd->right;
@@ -299,15 +372,17 @@ void	ft_rbt_delone(t_rbtnode **root, t_rbtnode *tbd, void (*del)(void *))
 			small->right = tbd->right;
 			small->right->parent = small;
 		}
+		else
+			x->parent = small;
 		ft_rbt_transplant(root, tbd, small);
 		small->left = tbd->left;
 		small->left->parent = small;
 		small->color = tbd->color;
 	}
+	printf("x: %d\n", *(int *)tbd->content);
+	if (ori == BLACK)
+		ft_rbt_delfixup(root, x);
 	if (del)
 		del(tbd->content);
 	free(tbd);
-	if (ori == BLACK)
-
-
 }

@@ -111,11 +111,11 @@ void		ft_bst_delone(t_bstnode **root, t_bstnode *tbd, void (*del)(void *));
 
 t_rbtnode	*ft_rbt_createnil(void);
 t_rbtnode	*ft_rbtnew(void *content, t_rbtnode *parent);
-t_rbtnode	*ft_rbtsearch(t_rbtnode *node, void *content);
+t_rbtnode	*ft_rbt_search(t_rbtnode *node, void *content);
 
-t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent);
-void		ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node);
 void		ft_rbt_insert(t_rbtnode **node, void *content);
+void		ft_rbt_delone(t_rbtnode **root, t_rbtnode *tbd, void (*del)(void *));
+
 
 t_rbtnode	*ft_rbt_findmax(t_rbtnode *root);
 t_rbtnode	*ft_rbt_findmin(t_rbtnode *root);
