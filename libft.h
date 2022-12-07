@@ -26,6 +26,7 @@ typedef struct s_list
 typedef struct	s_bstnode
 {
 	void				*content;
+	struct s_bstnode	*parent;
 	struct s_bstnode	*left;
 	struct s_bstnode	*right;
 }				t_bstnode;
@@ -97,26 +98,27 @@ void	ft_lstclear(t_list **lst, void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 
-t_bstnode	*ft_bstnew(void *content);
-int			ft_bstsearch(t_bstnode *node, void *content);
-void		ft_bstinsert(t_bstnode **node, void *content);
-void		*ft_bst_findmax(t_bstnode *root);
-void		*ft_bst_findmin(t_bstnode *root);
+t_bstnode	*ft_bstnew(void *content, t_bstnode *parent);
+t_bstnode	*ft_bst_search(t_bstnode *node, void *content);
+void		ft_bst_insert(t_bstnode **node, void *content, t_bstnode *parent);
+t_bstnode	*ft_bst_findmax(t_bstnode *root);
+t_bstnode	*ft_bst_findmin(t_bstnode *root);
 int			ft_bst_findheight(t_bstnode *root);
 void		ft_bst_preorder_iter(t_bstnode *root, void (*f)(void *));
 void		ft_bst_inorder_iter(t_bstnode *root, void (*f)(void *));
 void		ft_bst_postorder_iter(t_bstnode *root, void (*f)(void *));
+void		ft_bst_delone(t_bstnode **root, t_bstnode *tbd, void (*del)(void *));
 
 t_rbtnode	*ft_rbt_createnil(void);
 t_rbtnode	*ft_rbtnew(void *content, t_rbtnode *parent);
-int			ft_rbtsearch(t_rbtnode *node, void *content);
+t_rbtnode	*ft_rbtsearch(t_rbtnode *node, void *content);
 
 t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent);
 void		ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node);
 void		ft_rbt_insert(t_rbtnode **node, void *content);
 
-void		*ft_rbt_findmax(t_rbtnode *root);
-void		*ft_rbt_findmin(t_rbtnode *root);
+t_rbtnode	*ft_rbt_findmax(t_rbtnode *root);
+t_rbtnode	*ft_rbt_findmin(t_rbtnode *root);
 int			ft_rbt_findheight(t_rbtnode *root);
 void		ft_rbt_preorder_iter(t_rbtnode *root, void (*f)(void *));
 void		ft_rbt_inorder_iter(t_rbtnode *root, void (*f)(void *));

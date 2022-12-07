@@ -6,7 +6,7 @@
 /*   By: hyap <hyap@student.42kl.edu.my>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/05 20:53:00 by hyap              #+#    #+#             */
-/*   Updated: 2022/12/06 20:56:22 by hyap             ###   ########.fr       */
+/*   Updated: 2022/12/07 17:03:42 by hyap             ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,33 +105,33 @@ void	ft_rbt_rotate_right(t_rbtnode **root, t_rbtnode *node)
 	node->parent = tmp;
 }
 
-int	ft_rbtsearch(t_rbtnode *node, void *content)
+t_rbtnode	*ft_rbtsearch(t_rbtnode *node, void *content)
 {
 	if (node == g_nil)
-		return (0);
+		return (NULL);
 	if (ft_rbt_issame(node->content, content))
-		return (1);
+		return (node);
 	if (ft_rbt_lessthan(node->content, content))
 		return (ft_rbtsearch(node->left, content));
 	else
 		return (ft_rbtsearch(node->right, content));
 }
 
-void	*ft_rbt_findmin(t_rbtnode *root)
+t_rbtnode	*ft_rbt_findmin(t_rbtnode *root)
 {
 	if (ft_rbt_isnil(root))
 		return (NULL);
 	if (ft_rbt_isnil(root->left))
-		return (root->content);
+		return (root);
 	return (ft_rbt_findmin(root->left));
 }
 
-void	*ft_rbt_findmax(t_rbtnode *root)
+t_rbtnode	*ft_rbt_findmax(t_rbtnode *root)
 {
 	if (ft_rbt_isnil(root))
 		return (NULL);
 	if (ft_rbt_isnil(root->right))
-		return (root->content);
+		return (root);
 	return (ft_rbt_findmax(root->right));
 }
 
@@ -196,7 +196,7 @@ t_rbtnode	*ft_rbt_preinsert(t_rbtnode **node, void *content, t_rbtnode *parent)
 void	ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node)
 {
 	t_rbtnode	*uncle;
-	
+
 	while (node->parent->color == RED)
 	{
 		if (node->parent == node->parent->parent->left) // node parent is a left child
@@ -250,7 +250,64 @@ void	ft_rbt_fixup(t_rbtnode **root, t_rbtnode *node)
 void	ft_rbt_insert(t_rbtnode **node, void *content)
 {
 	t_rbtnode	*inserted;
-	
+
 	inserted = ft_rbt_preinsert(node, content, g_nil);
 	ft_rbt_fixup(node, inserted);
+}
+
+static void	ft_rbt_transplant(t_rbtnode **root, t_rbtnode *u, t_rbtnode *v)
+{
+	if (u->parent == g_nil)
+		*root = v;
+	else if (u->parent->left == u)
+		u->parent->left = v;
+	else
+		u->parent->right = v;
+	if (v != g_nil)
+		v->parent = u->parent;
+}
+
+// static void	ft_rbt_fixup(t_rbtnode *)
+
+void	ft_rbt_delone(t_rbtnode **root, t_rbtnode *tbd, void (*del)(void *))
+{
+	enum color	ori;
+	t_rbtnode	*x;
+	t_rbtnode	*small;
+
+	if (!tbd)
+		return ;
+	ori = tbd->color;
+	if (tbd->left == g_nil)
+	{
+		x = tbd->right;
+		ft_rbt_transplant(root, tbd, tbd->right);
+	}
+	else if (tbd->right == g_nil)
+	{
+		x = tbd->left;
+		ft_rbt_transplant(root, tbd, tbd->left);
+	}
+	else
+	{
+		small = ft_rbt_findmin(tbd->right);
+		ori = small->color;
+		x = small->right;
+		if (small->parent != tbd)
+		{
+			ft_rbt_transplant(root, small, small->right);
+			small->right = tbd->right;
+			small->right->parent = small;
+		}
+		ft_rbt_transplant(root, tbd, small);
+		small->left = tbd->left;
+		small->left->parent = small;
+		small->color = tbd->color;
+	}
+	if (del)
+		del(tbd->content);
+	free(tbd);
+	if (ori == BLACK)
+
+
 }
